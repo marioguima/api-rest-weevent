@@ -3,8 +3,8 @@ const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
-const rotaUsuarios = require('./routes/users');
-const rotaEventos = require('./routes/events');
+const usersRoutes = require('./routes/users.routes');
+const eventsRoutes = require('./routes/events.routes');
 
 app.use(morgan('dev'));
 
@@ -34,8 +34,9 @@ app.use((req, res, next) => {
 
 })
 
-app.use('/users', rotaUsuarios);
-app.use('/events', rotaEventos);
+// Rotas
+app.use('/users', usersRoutes);
+app.use('/events', eventsRoutes);
 
 app.use('/test', (req, res, next) => {
   res.status(200).send({
@@ -43,12 +44,14 @@ app.use('/test', (req, res, next) => {
   });
 });
 
+// Rotas que não existem
 app.use((req, res, next) => {
   var err = new Error('Not Found');
   err.name = '404';
   next(err);
 });
 
+// Erro 404 ou 500
 app.use((error, req, res, next) => {
   const status = error.name == '404' ? 404 : res.status;
   res.status(status || 500);
