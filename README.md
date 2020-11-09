@@ -51,4 +51,4 @@ CORS
 Permite que o site acesse outro site dependendo das restrições do headers do http
 É um mecanismo utilizado pelos navegadores para compartilhar recursos entre diferentes origens
 
-    > https://www.treinaweb.com.br/blog/o-que-e-cors-e-como-resolver-os-principais-erros/
+> https://www.treinaweb.com.br/blog/o-que-e-cors-e-como-resolver-os-principais-erros/
