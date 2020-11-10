@@ -2,6 +2,7 @@ const db = require('../database/models/index');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth.json');
+const { Op } = require('sequelize');
 
 function generateToken(params = {}) {
     return jwt.sign(params, authConfig.secret, {
@@ -222,4 +223,37 @@ module.exports = {
     //         user
     //     });
     // },
+
+    async show(req, res) {
+        try {
+
+            const { user_id } = req.params;
+
+            const user = await db.User.findOne({
+                attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt'],
+                where: {
+                    id: user_id
+                }
+            });
+
+            if (user == null) {
+                return res.status(404).send({
+                    status: 0,
+                    message: "No data found"
+                });
+            }
+
+            return res.status(200).send({
+                status: 1,
+                message: 'User details',
+                users: user
+            });
+
+        } catch (err) {
+            return res.status(400).json({
+                status: 0,
+                error: err
+            });
+        }
+    },
 }

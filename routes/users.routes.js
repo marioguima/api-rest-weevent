@@ -24,7 +24,7 @@ router.put('/:user_id', userController.update);
 router.delete('/:user_id', userController.delete);
 
 // Retorna os dados de um usuário
-// router.get('/:user_id', userController.list);
+router.get('/:user_id', userController.show);
 
 // router.get('/:user_id', (req, res, next) => {
 //   const id = req.params.user_id;
