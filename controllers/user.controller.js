@@ -49,7 +49,6 @@ module.exports = {
             const token = generateToken({ id: user.id });
 
             // remover as colunas que não devem ser enviadas na resposta
-            delete user.dataValues.password;
             delete user.dataValues.role;
             delete user.dataValues.encryptedPassword;
 
@@ -103,7 +102,7 @@ module.exports = {
             const userParams = {
                 name: req.body.name,
                 email: req.body.email,
-                password: req.body.password,
+                encryptedPassword: req.body.password,
                 role: 'manager'
             };
 
@@ -111,7 +110,6 @@ module.exports = {
                 userParams
             ).then(function (user) {
                 // remover as colunas que não devem ser enviadas na resposta
-                delete user.dataValues.password;
                 delete user.dataValues.role;
                 delete user.dataValues.updatedAt;
                 delete user.dataValues.encryptedPassword;
@@ -124,23 +122,6 @@ module.exports = {
                     token: token
                 });
             });
-
-            // // const user = await db.User.create({ name, email, encryptedPassword });
-
-            // const user = await db.User.create(userParams);
-
-            // const token = generateToken({ id: user.id });
-
-            // // user.password = undefined;
-            // // user.encryptedPassword = undefined;
-            // // user.role = undefined;
-
-            // return res.status(201).send({
-            //     status: 1,
-            //     message: 'User successfully added',
-            //     user: user,
-            //     token: token
-            // });
 
         } catch (err) {
             return res.status(400).json({
@@ -158,7 +139,7 @@ module.exports = {
             const userParams = {
                 name: req.body.name,
                 email: req.body.email,
-                password: req.body.password
+                encryptedPassword: req.body.password
             };
             const { user_id } = req.params;
 

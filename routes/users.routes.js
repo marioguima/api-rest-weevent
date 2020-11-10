@@ -6,13 +6,16 @@ const authMiddleware = require('../middlewares/auth');
 // Login do usuário
 router.post('/login', userController.login);
 
+// Inserir um usuário
+router.post('/', userController.store);
+
+// Verifica Autenticação
+//  > dessa linha para baixo todas as rotas precisam estar autenticadas
+//  > precisam passar o token para acessar a rota
 router.use(authMiddleware);
 
 // Retorna todos os usuários
 router.get('/', userController.index);
-
-// Inserir um usuário
-router.post('/', userController.store);
 
 // Alterar um usuário
 router.put('/:user_id', userController.update);
