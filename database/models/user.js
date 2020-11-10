@@ -1,6 +1,12 @@
 'use strict';
 const bcrypt = require('bcrypt');
 
+// const timezone = 'American/Sao_Paulo';
+// const moment = require('moment').tz.setDefault(timezone);
+const moment = require('moment');
+
+
+
 const {
   Model
 } = require('sequelize');
@@ -57,6 +63,27 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.ENUM('admin', 'manager')
     },
+    // createdDate: {
+    //   type: DataTypes.VIRTUAL,
+    //   // get: function () {
+    //   //   const data = this.getDataValue('createdAt')
+    //   //   // return moment.utc(data).format('L LTS')
+    //   //   return moment.utc(data).format('L LTS')
+    //   //   // return moment.utc(this.getDataValue('createdAt')).format('YYYY-MM-DD')
+    //   // }
+    // },
+    // CreateTime: {
+    //   type: DataTypes.TIME,
+    //   get: function () {
+    //     let time = this.getDataValue('createdAt')
+
+    //     if (moment(time, moment.ISO_8601, true).isValid()) {
+    //       return moment(this.getDataValue('createdAt')).format('HH:mm:ss')
+    //     } else {
+    //       return time
+    //     }
+    //   }
+    // }
   }, {
     sequelize,
     modelName: 'User',

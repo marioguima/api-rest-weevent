@@ -5,7 +5,7 @@ const authConfig = require('../config/auth.json');
 
 function generateToken(params = {}) {
     return jwt.sign(params, authConfig.secret, {
-        expiresIn: "24h",
+        expiresIn: "48 hrs", // ou 2 days / 2d (tudo igual)
     });
 }
 module.exports = {
@@ -71,7 +71,7 @@ module.exports = {
         try {
 
             const users = await db.User.findAll({
-                attributes: ['id', 'name', 'email']
+                attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt']
             });
 
             if (users == "" || users == null) {
@@ -155,9 +155,8 @@ module.exports = {
                 }
             }).then(function (user) {
                 // remover as colunas que não devem ser enviadas na resposta
-                // delete user.dataValues.password;
-                // delete user.dataValues.role;
-                // delete user.dataValues.encryptedPassword;
+                delete user.dataValues.role;
+                delete user.dataValues.encryptedPassword;
 
                 res.status(200).send({
                     status: 1,

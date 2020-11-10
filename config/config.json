@@ -4,7 +4,14 @@
     "password": null,
     "database": "webinar",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "charset": "utf8",
+    "collate": "utf8_general_ci",
+    "dialectOptions": {
+      "useUTC": false,
+      "dateStrings": true,
+      "typeCast": true
+    }
   },
   "test": {
     "username": "root",
