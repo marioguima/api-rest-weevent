@@ -1,52 +1,24 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
 const router = express.Router();
+const authMiddleware = require('../middlewares/auth');
 
 // Login do usuário
 router.post('/login', userController.login);
 
+router.use(authMiddleware);
+
 // Retorna todos os usuários
 router.get('/', userController.index);
-
-// router.get('/', (req, res, next) => {
-//   res.status(200).send({
-//     message: 'List of users'
-//   });
-// });
 
 // Inserir um usuário
 router.post('/', userController.store);
 
-// router.post('/', (req, res, next) => {
-//   const user = {
-//     name: req.body.name,
-//     email: req.body.email,
-//     password: req.body.password
-//   }
-
-//   res.status(201).send({
-//     message: 'Inserted user',
-//     user: user
-//   });
-// });
-
 // Alterar um usuário
-router.put('/', userController.update);
-
-// router.patch('/', (req, res, next) => {
-//   res.status(201).send({
-//     message: 'Updated user'
-//   });
-// });
+router.put('/:user_id', userController.update);
 
 // Excluir um usuário
-router.delete('/', userController.delete);
-
-// router.delete('/', (req, res, next) => {
-//   res.status(201).send({
-//     message: 'Deleted user'
-//   });
-// });
+router.delete('/:user_id', userController.delete);
 
 // Retorna os dados de um usuário
 // router.get('/:user_id', userController.list);

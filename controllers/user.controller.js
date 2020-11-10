@@ -10,132 +10,224 @@ function generateToken(params = {}) {
 }
 module.exports = {
     async login(req, res) {
-        // const { email, password, islogged } = req.body;
-        const { email, password } = req.body;
+        try {
+            // const { email, password, islogged } = req.body;
+            const { email, password } = req.body;
 
-        const user = await db.User.findOne({
-            where: {
-                email
+            const user = await db.User.findOne({
+                where: {
+                    email
+                }
+            });
+
+            if (!user) {
+                return res.status(400).send({
+                    status: 0,
+                    message: 'Incorrect email or password'
+                })
             }
-        });
 
-        if (!user) {
-            return res.status(400).send({
+            if (!bcrypt.compareSync(password, user.encryptedPassword)) {
+                return res.status(400).send({
+                    status: 0,
+                    message: 'Incorrect email or password'
+                })
+            }
+
+            // const user_id = user.id;
+
+            // await db.User.update({
+            //     islogged
+            // }, {
+            //     where: {
+            //         id: user_id
+            //     }
+            // })
+
+            // user.encryptedPassword = undefined;
+
+            const token = generateToken({ id: user.id });
+
+            // remover as colunas que não devem ser enviadas na resposta
+            delete user.dataValues.password;
+            delete user.dataValues.role;
+            delete user.dataValues.encryptedPassword;
+
+            return res.status(200).send({
+                status: 1,
+                message: 'Login successfully',
+                user: user,
+                token: token
+            });
+
+        } catch (err) {
+            return res.status(400).json({
                 status: 0,
-                message: 'Incorrect email or password'
-            })
+                error: err
+            });
         }
-
-        if (!bcrypt.compareSync(password, user.encryptedPassword)) {
-            return res.status(400).send({
-                status: 0,
-                message: 'Incorrect email or password'
-            })
-        }
-
-        // const user_id = user.id;
-
-        // await db.User.update({
-        //     islogged
-        // }, {
-        //     where: {
-        //         id: user_id
-        //     }
-        // })
-
-        user.encryptedPassword = undefined;
-
-        const token = generateToken({ id: user.id });
-
-        return res.status(200).send({
-            status: 1,
-            message: 'Login successfully',
-            user: user,
-            token: token
-        });
     },
 
     async index(req, res) {
+        try {
 
-        const users = await db.User.findAll();
+            const users = await db.User.findAll({
+                attributes: ['id', 'name', 'email']
+            });
 
-        if (users == "" || users == null) {
-            return res.status(404).send({
-                message: "No users found"
+            if (users == "" || users == null) {
+                return res.status(404).send({
+                    status: 0,
+                    message: "No users found"
+                });
+            }
+
+            return res.status(200).send({
+                status: 1,
+                message: 'List of users',
+                users: users
+            });
+
+        } catch (err) {
+            return res.status(400).json({
+                status: 0,
+                error: err
             });
         }
-
-        return res.status(200).send({
-            message: 'List of users',
-            users: users
-        });
-
     },
 
     async store(req, res) {
 
-        const userParams = {
-            name: req.body.name,
-            email: req.body.email,
-            encryptedPassword: req.body.password,
-            role: 'manager'
-        };
+        try {
 
-        // const user = await db.User.create({ name, email, encryptedPassword });
-        const user = await db.User.create(userParams);
+            const userParams = {
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password,
+                role: 'manager'
+            };
 
+            await db.User.create(
+                userParams
+            ).then(function (user) {
+                // remover as colunas que não devem ser enviadas na resposta
+                delete user.dataValues.password;
+                delete user.dataValues.role;
+                delete user.dataValues.updatedAt;
+                delete user.dataValues.encryptedPassword;
 
-        const token = generateToken({ id: user.id });
+                const token = generateToken({ id: user.id });
+                return res.status(201).send({
+                    status: 1,
+                    message: 'User successfully added',
+                    user: user,
+                    token: token
+                });
+            });
 
-        return res.status(201).send({
-            status: 1,
-            message: 'User successfully registered',
-            user: user,
-            token: token
-        });
+            // // const user = await db.User.create({ name, email, encryptedPassword });
+
+            // const user = await db.User.create(userParams);
+
+            // const token = generateToken({ id: user.id });
+
+            // // user.password = undefined;
+            // // user.encryptedPassword = undefined;
+            // // user.role = undefined;
+
+            // return res.status(201).send({
+            //     status: 1,
+            //     message: 'User successfully added',
+            //     user: user,
+            //     token: token
+            // });
+
+        } catch (err) {
+            return res.status(400).json({
+                status: 0,
+                error: err
+            });
+        }
 
     },
 
-    async update(req, res) {
+    async update(req, res, next) {
 
-        const { user_id, name, email, password } = req.body;
-        // const { user_id } = req.params;
+        try {
 
-        await db.User.update({
-            name,
-            email,
-            password
-        }, {
-            where: {
-                id: user_id
-            }
-        });
+            const userParams = {
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password
+            };
+            const { user_id } = req.params;
 
-        return res.status(200).send({
-            status: 1,
-            message: 'User updated successfully'
-        });
+            await db.User.update(userParams, {
+                where: {
+                    id: user_id
+                }
+            }).then((linesUpdated) => {
+                if (linesUpdated > 0) {
+                    return db.User.findOne({ where: { id: user_id } })
+                } else {
+                    throw ('User not find');
+                }
+            }).then(function (user) {
+                // remover as colunas que não devem ser enviadas na resposta
+                // delete user.dataValues.password;
+                // delete user.dataValues.role;
+                // delete user.dataValues.encryptedPassword;
+
+                res.status(200).send({
+                    status: 1,
+                    message: 'User updated successfully',
+                    user: user
+                })
+                // }).catch(next);
+            }).catch((err) => {
+                return res.status(400).json({
+                    status: 0,
+                    message: err
+                });
+            });
+
+        } catch (err) {
+            return res.status(400).json({
+                status: 0,
+                error: err
+            });
+        }
 
     },
 
     async delete(req, res) {
 
-        const { user_id } = req.body;
+        try {
 
-        await db.User.destroy({
-            where: {
-                id: user_id
-            }
-        });
+            const { user_id } = req.params;
 
-        return res.status(200).send({
-            status: 1,
-            message: 'User successfully deleted'
-        });
+            await db.User.destroy({
+                where: {
+                    id: user_id
+                }
+            });
+
+            return res.status(200).send({
+                status: 1,
+                message: 'User successfully deleted'
+            });
+
+        } catch (err) {
+            return res.status(400).json({
+                status: 0,
+                error: err
+            });
+        }
 
     },
 
-    // async list(req, res) {
+    // Retorna um usuário
+    // async show(req, res) {
     //     const { email, password, islogged } = req.body;
 
     //     const user = await db.User.findOne({

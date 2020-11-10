@@ -18,8 +18,8 @@ module.exports = {
 
             return res.status(200).send(user.event);
 
-        } catch (error) {
-            return res.status(400).json({ error: error });
+        } catch (err) {
+            return res.status(400).json({ error: err });
         }
 
     },
@@ -52,8 +52,8 @@ module.exports = {
                 event
             });
 
-        } catch (error) {
-            return res.status(400).json({ error: error });
+        } catch (err) {
+            return res.status(400).json({ error: err });
         }
 
     },
@@ -80,8 +80,8 @@ module.exports = {
                 message: 'usuário atualizado com sucesso'
             });
 
-        } catch (error) {
-            return res.status(400).json({ error: error });
+        } catch (err) {
+            return res.status(400).json({ error: err });
         }
 
     },
@@ -103,8 +103,8 @@ module.exports = {
                 message: 'usuário excluído com sucesso'
             });
 
-        } catch (error) {
-            return res.status(400).json({ error: error });
+        } catch (err) {
+            return res.status(400).json({ error: err });
         }
 
     }

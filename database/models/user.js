@@ -38,18 +38,21 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
+    password: {
+      type: DataTypes.VIRTUAL
+    },
     encryptedPassword: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: 'Informe sua senha'
-        },
-        len: {
-          args: [5, 10],
-          msg: 'A senha deve conter entre 5 e 10 caracteres'
-        }
-      }
+      // allowNull: false,
+      // validate: {
+      //   notNull: {
+      //     msg: 'Informe sua senha'
+      //   },
+      //   len: {
+      //     args: [5, 10],
+      //     msg: 'A senha deve conter entre 5 e 10 caracteres'
+      //   }
+      // }
     },
     role: {
       allowNull: false,
@@ -59,12 +62,29 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User',
     hooks: {
-      beforeCreate: (user) => {
-        const salt = bcrypt.genSaltSync();
-        console.log('salt = ' + salt);
-        console.log('user.encryptedPassword = ' + user.encryptedPassword);
-        user.encryptedPassword = bcrypt.hashSync(user.encryptedPassword, salt);
-      }
+      beforeUpdate: (user) => {
+        console.log('user');
+        console.log(user);
+        if (user.password) {
+          const salt = bcrypt.genSaltSync();
+          user.encryptedPassword = bcrypt.hashSync(user.password, salt);
+          // user.encryptedPassword = await bcrypt.hash(user.password, 8);
+        }
+      },
+      // beforeSave: (userParms) => {
+      //   const salt = bcrypt.genSaltSync();
+      //   userParms.encryptedPassword = bcrypt.hashSync(userParms.password, salt);
+      // },
+      // beforeCreate: (user) => {
+      //   const salt = bcrypt.genSaltSync();
+      //   user.encryptedPassword = bcrypt.hashSync(user.encryptedPassword, salt);
+      // },
+      // beforeUpdate: (user) => {
+      //   if (user.encryptedPassword != undefined && user.encryptedPassword != "") {
+      //     const salt = bcrypt.genSaltSync();
+      //     user.encryptedPassword = bcrypt.hashSync(user.encryptedPassword, salt);
+      //   }
+      // }
     }
   });
   return User;
